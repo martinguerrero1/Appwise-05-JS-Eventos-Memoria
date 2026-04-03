@@ -43,6 +43,8 @@ const textoFinal = document.querySelector("#texto-final");
 // ============================================================
 function cargarHighScore() {
   // TU CÓDIGO AQUÍ 👇
+  const highScore = localStorage.getItem("whack-highscore");
+  displayHighScore.textContent = highScore = null ? "0" : highScore;
 }
 
 // ============================================================
@@ -59,6 +61,16 @@ function cargarHighScore() {
 // ============================================================
 function actualizarHighScore() {
   // TU CÓDIGO AQUÍ 👇
+  const highScore = localStorage.getItem("whack-highscore");
+
+  if (puntaje > Number(highScore) || 0){
+    localStorage.setItem("whack-highscore", puntaje);
+    displayHighScore.textContent = puntaje;
+    return true;
+  }
+
+  return false;
+
 }
 
 // ============================================================
@@ -74,6 +86,8 @@ function actualizarHighScore() {
 // ============================================================
 function hoyoAleatorio() {
   // TU CÓDIGO AQUÍ 👇
+  const numAleatorio = Math.floor(Math.random()*hoyos.length);
+  return hoyos[numAleatorio];
 }
 
 // ============================================================
@@ -95,6 +109,9 @@ function hoyoAleatorio() {
 // ============================================================
 function mostrarTopo() {
   // TU CÓDIGO AQUÍ 👇
+  if (hoyoActivo !== null){
+    hoyoActivo.classList.remove("visible")
+  }
 }
 
 // ============================================================
