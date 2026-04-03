@@ -20,10 +20,12 @@ const date = new Date();
 //   }
 // }
 
-let str = "mar tisdn jas dasfar"
+let arr = [1, 2 ,6 ,87 ,89,0]
 
-console.log(soloNumeros(str))
+console.log(ordenarRanking(arr))
 
-function soloNumeros(str) {
-  return str.toLowerCase().replaceAll(" ", "-");
+function ordenarRanking(arr) {
+  // TU CÓDIGO AQUÍ 👇
+  let rankingOrden =  arr.map(e => e);
+  return rankingOrden.sort((a,b) => b - a);
 }
