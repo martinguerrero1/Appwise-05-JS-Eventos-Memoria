@@ -4,9 +4,9 @@
 ========================================================================== */
 
 // 1. VARIABLES DE ESTADO DEL JUEGO
-let monedas = 0;
-let mineros = 0;
-let costoMinero = 10;
+let monedas = parseInt(localStorage.getItem('monedas')) || 0;
+let mineros = parseInt(localStorage.getItem('mineros')) || 0;
+let costoMinero = parseInt(localStorage.getItem('costoMinero')) || 0;
 
 // 2. ATRAPAMOS LOS ELEMENTOS DEL DOM
 const btnMinar = document.querySelector("#btn-minar");
@@ -30,6 +30,11 @@ function cargarPartida() {
   //      Ej: parseInt(localStorage.getItem('monedas')) || 0
   // -------------------------------------------------
   // TU CÓDIGO AQUÍ 👇
+  displayMonedas.textContent = parseInt(localStorage.getItem('monedas')) || 0;
+  displayMps.textContent = parseInt(localStorage.getItem('mps')) || 0;
+  displayMineros.textContent = parseInt(localStorage.getItem('mineros')) || 0;
+  displayCosto.textContent = parseInt(localStorage.getItem('costoMinero')) || 0;
+
 
   // Actualizamos la pantalla con los datos cargados
   actualizarPantalla();
@@ -43,6 +48,9 @@ function guardarPartida() {
   //      Usá el mismo nombre de clave que usaste en la Tarea 1 para leerlas.
   // -------------------------------------------------
   // TU CÓDIGO AQUÍ 👇
+  localStorage.setItem('monedas', monedas);
+  localStorage.setItem('mineros', mineros);
+  localStorage.setItem('costoMinero', costoMinero);
 }
 
 function actualizarPantalla() {
@@ -73,6 +81,9 @@ function actualizarPantalla() {
 // -------------------------------------------------
 btnMinar.addEventListener("click", () => {
   // TU CÓDIGO AQUÍ 👇
+  monedas = monedas + 1;
+  guardarPartida(); //todos los localstorage setitem
+  actualizarPantalla(); //displayea todos los datos y actualiza disponibilidad del boton de mineros
 });
 
 // 📝 TAREA 4: Evento para comprar un Minero
@@ -86,6 +97,13 @@ btnMinar.addEventListener("click", () => {
 // -------------------------------------------------
 btnComprarMinero.addEventListener("click", () => {
   // TU CÓDIGO AQUÍ 👇
+  if (monedas >= costoMinero){
+    monedas = monedas - costoMinero;
+    mineros = mineros + 1;
+    costoMinero = Math.floor(costoMinero * 1.5);
+    guardarPartida();
+    actualizarPantalla();
+  }
 });
 
 // Evento para borrar todo (Modo Dios)
@@ -113,6 +131,13 @@ btnReset.addEventListener("click", () => {
 //   3. Llamá a guardarPartida() y actualizarPantalla().
 // -------------------------------------------------
 // TU CÓDIGO AQUÍ 👇
+setInterval(() => {
+  if (mineros > 0){
+    monedas = monedas + mineros; 
+  };
+  guardarPartida();
+  actualizarPantalla();
+}, 1000);
 
 // ==========================================================================
 // ¡ARRANQUE!

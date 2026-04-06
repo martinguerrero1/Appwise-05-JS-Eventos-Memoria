@@ -12,6 +12,7 @@
 -------------------------------------------------------------------------- */
 function empaquetar(obj) {
   // TU CÓDIGO AQUÍ 👇
+  return JSON.stringify(obj);
 }
 
 /* --------------------------------------------------------------------------
@@ -21,6 +22,7 @@ function empaquetar(obj) {
 -------------------------------------------------------------------------- */
 function desempaquetar(str) {
   // TU CÓDIGO AQUÍ 👇
+  return JSON.parse(str);
 }
 
 /* --------------------------------------------------------------------------
@@ -31,8 +33,14 @@ function desempaquetar(str) {
 -------------------------------------------------------------------------- */
 function esJsonValido(str) {
   // TU CÓDIGO AQUÍ 👇
+  try{
+    if(JSON.parse(str)){
+    return true;
+    } 
+  } catch(error){
+  return false;
+  }
 }
-
 /* --------------------------------------------------------------------------
    KATA 4 — existeClave
    Recibe un objeto de configuración y una clave (string).
@@ -41,6 +49,10 @@ function esJsonValido(str) {
 -------------------------------------------------------------------------- */
 function existeClave(config, key) {
   // TU CÓDIGO AQUÍ 👇
+  if(key in config){
+    return true;
+  };
+  return false;
 }
 
 /* --------------------------------------------------------------------------
@@ -50,6 +62,7 @@ function existeClave(config, key) {
 -------------------------------------------------------------------------- */
 function serializarLista(arr) {
   // TU CÓDIGO AQUÍ 👇
+  return arr.join(); //por default separa con una coma
 }
 
 /* --------------------------------------------------------------------------
@@ -59,6 +72,7 @@ function serializarLista(arr) {
 -------------------------------------------------------------------------- */
 function limpiarNulos(arr) {
   // TU CÓDIGO AQUÍ 👇
+  return arr.filter(element => element != null || undefined);
 }
 
 /* --------------------------------------------------------------------------
@@ -70,6 +84,10 @@ function limpiarNulos(arr) {
 -------------------------------------------------------------------------- */
 function fusionarConfig(user, def) {
   // TU CÓDIGO AQUÍ 👇
+  return {
+    ...def,
+    ...user
+  }
 }
 
 /* --------------------------------------------------------------------------
@@ -79,6 +97,7 @@ function fusionarConfig(user, def) {
 -------------------------------------------------------------------------- */
 function contarPropiedades(obj) {
   // TU CÓDIGO AQUÍ 👇
+  return (Object.keys(obj)).length;
 }
 
 /* --------------------------------------------------------------------------
@@ -89,6 +108,14 @@ function contarPropiedades(obj) {
 -------------------------------------------------------------------------- */
 function claveAEmojis(str) {
   // TU CÓDIGO AQUÍ 👇
+  switch (str){
+    case "true":
+      return str = "✅";
+    case "false":
+      return str = "❌";
+    default:
+      return "❓";
+  }
 }
 
 /* --------------------------------------------------------------------------
@@ -99,6 +126,8 @@ function claveAEmojis(str) {
 -------------------------------------------------------------------------- */
 function clonarSeguro(obj) {
   // TU CÓDIGO AQUÍ 👇
+  var clonObj = JSON.parse(JSON.stringify(obj));
+  return clonObj;
 }
 
 // 🚨 ¡NO TOCAR! Exportación para los tests
