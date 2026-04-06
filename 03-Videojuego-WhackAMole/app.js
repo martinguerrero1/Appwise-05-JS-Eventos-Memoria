@@ -31,7 +31,7 @@ const hoyos = document.querySelectorAll(".hoyo");
 const mensajeFinal = document.querySelector("#mensaje-final");
 const textoFinal = document.querySelector("#texto-final");
 
-const highScore = localStorage.getItem("whack-highscore")
+let highScore = localStorage.getItem("whack-highscore")
 
 // ============================================================
 // PASO 1 — Cargar el High Score desde localStorage
@@ -45,7 +45,7 @@ const highScore = localStorage.getItem("whack-highscore")
 // ============================================================
 function cargarHighScore() {
   // TU CÓDIGO AQUÍ 👇
-  displayHighScore.textContent = highScore = null ? "0" : highScore;
+  displayHighScore.textContent = highScore === null ? "0" : highScore;
 }
 
 // ============================================================
@@ -62,7 +62,7 @@ function cargarHighScore() {
 // ============================================================
 function actualizarHighScore() {
   // TU CÓDIGO AQUÍ 👇
-  if (puntaje > Number(highScore) || 0){
+  if (puntaje > (Number(highScore) || 0)){
     localStorage.setItem("whack-highscore", puntaje);
     displayHighScore.textContent = puntaje;
     return true;
@@ -107,17 +107,21 @@ function hoyoAleatorio() {
 // Tip: setTimeout ejecuta código una sola vez después de N ms.
 // ============================================================
 function mostrarTopo() {
-  // TU CÓDIGO AQUÍ 👇
-  if (hoyoActivo !== null){
-    hoyoActivo.classList.remove("visible")
+  if (hoyoActivo !== null) {
+    hoyoActivo.classList.remove("visible");
   }
+
   hoyoActivo = hoyoAleatorio();
   hoyoActivo.classList.add("visible");
-  if (hoyoActivo !== null){
-    setTimeout(() => { 
-      hoyoActivo.classList.remove("visible")
-     }, 800);
-  }
+
+  const hoyoActual = hoyoActivo; // 🔥 CLAVE
+
+  setTimeout(() => {
+    if (hoyoActivo === hoyoActual) {
+      hoyoActual.classList.remove("visible");
+      hoyoActivo = null;
+    }
+  }, 800);
 }
 
 // ============================================================
@@ -145,6 +149,7 @@ function golpearTopo(evento) {
     return false
   }
   puntaje++;
+  displayPuntaje.textContent = puntaje;
   hoyoActivo.classList.remove("visible")
   hoyoActivo.classList.add("golpeado")
   setTimeout(() => {
@@ -179,8 +184,8 @@ function iniciarPartida() {
   juegoActivo = true;
 
   displayHighScore.textContent = highScore;
-  displayPuntaje.textContent = '';
-  displayTiempo.textContent = '';
+  displayPuntaje.textContent = 0;
+  displayTiempo.textContent = 30;
   mensajeFinal.classList.add("oculto");
   btnIniciar.disabled = true;
 
@@ -246,9 +251,9 @@ function terminarPartida() {
 // ============================================================
 
 // TU CÓDIGO AQUÍ 👇
-addEventListener("click", btnIniciar => iniciarPartida);
+btnIniciar.addEventListener("click", iniciarPartida);
 hoyos.forEach(hoyo => {
-  addEventListener("click", hoyo => golpearTopo);
+  hoyo.addEventListener("click",golpearTopo);
 });
 
 // ============================================================
