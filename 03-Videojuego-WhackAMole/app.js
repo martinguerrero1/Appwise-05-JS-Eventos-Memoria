@@ -15,23 +15,31 @@
 // ============================================================
 let puntaje = 0;
 let tiempoRestante = 30;
+
 let intervaloTopo = null; // Va a guardar el ID del setInterval de los topos
 let intervaloTimer = null; // Va a guardar el ID del setInterval del reloj
+
 let juegoActivo = false;
+
 let hoyoActivo = null; // El hoyo que tiene el topo visible en este momento
 
 // ============================================================
 // 🔌 CONEXIONES AL DOM — Ya están escritas, no las toques
 // ============================================================
+// MERCADOR
 const displayPuntaje = document.querySelector("#puntaje");
 const displayTiempo = document.querySelector("#tiempo");
 const displayHighScore = document.querySelector("#high-score");
-const btnIniciar = document.querySelector("#btn-iniciar");
+
+// JARDIN
 const hoyos = document.querySelectorAll(".hoyo");
+
+// CONTROLES
+const btnIniciar = document.querySelector("#btn-iniciar");
+
+// MENSAJE
 const mensajeFinal = document.querySelector("#mensaje-final");
 const textoFinal = document.querySelector("#texto-final");
-
-let highScore = localStorage.getItem("whack-highscore")
 
 // ============================================================
 // PASO 1 — Cargar el High Score desde localStorage
@@ -45,7 +53,9 @@ let highScore = localStorage.getItem("whack-highscore")
 // ============================================================
 function cargarHighScore() {
   // TU CÓDIGO AQUÍ 👇
-  displayHighScore.textContent = highScore === null ? "0" : highScore;
+  const highScore = localStorage.getItem("whack-highscore");
+  displayHighScore.textContent = highScore === null ? "0": highScore;
+  return displayHighScore.textContent;
 }
 
 // ============================================================
@@ -62,14 +72,12 @@ function cargarHighScore() {
 // ============================================================
 function actualizarHighScore() {
   // TU CÓDIGO AQUÍ 👇
-  if (puntaje > (Number(highScore) || 0)){
+  const numHighScore = Number(localStorage.getItem("whack-highscore")) || 0;
+  if(puntaje > numHighScore){
     localStorage.setItem("whack-highscore", puntaje);
-    displayHighScore.textContent = puntaje;
     return true;
   }
-
   return false;
-
 }
 
 // ============================================================
@@ -85,8 +93,8 @@ function actualizarHighScore() {
 // ============================================================
 function hoyoAleatorio() {
   // TU CÓDIGO AQUÍ 👇
-  const numAleatorio = Math.floor(Math.random()*hoyos.length);
-  return hoyos[numAleatorio];
+  const numero = Math.floor(Math.random() * hoyos.length);
+  return hoyos[numero];
 }
 
 // ============================================================
@@ -107,14 +115,15 @@ function hoyoAleatorio() {
 // Tip: setTimeout ejecuta código una sola vez después de N ms.
 // ============================================================
 function mostrarTopo() {
-  if (hoyoActivo !== null) {
+  // TU CÓDIGO AQUÍ 👇
+  //si es null sigue de largo, si no es null, le quita visibilidad para darsela a otro topo
+  if(hoyoActivo !== null){
     hoyoActivo.classList.remove("visible");
   }
-
   hoyoActivo = hoyoAleatorio();
   hoyoActivo.classList.add("visible");
 
-  const hoyoActual = hoyoActivo; // 🔥 CLAVE
+  const hoyoActual = hoyoActivo;
 
   setTimeout(() => {
     if (hoyoActivo === hoyoActual) {
@@ -141,20 +150,23 @@ function mostrarTopo() {
 // ============================================================
 function golpearTopo(evento) {
   // TU CÓDIGO AQUÍ 👇
-  if(!juegoActivo){
-    return false;
-  }
-  const hoyo = evento.currentTarget;
-  if (!hoyo.classList.contains("visible")){
-    return false
-  }
-  puntaje++;
+  //si el juego no esta activo no corre
+  if(!juegoActivo) return;
+
+  const hoyoClickeado = evento.currentTarget;
+
+  //si el hoyo clickeado no es visible no corre
+  if (!hoyoClickeado.classList.contains("visible")) return;
+
+  puntaje = puntaje + 1;
   displayPuntaje.textContent = puntaje;
-  hoyoActivo.classList.remove("visible")
-  hoyoActivo.classList.add("golpeado")
+
+  hoyoClickeado.classList.remove("visible");
+  hoyoClickeado.classList.add("golpeado");
   setTimeout(() => {
-    hoyoActivo.classList.remove("golpeado")
-  }, 300)
+    hoyoClickeado.classList.remove("golpeado");
+  }, 300);
+
   hoyoActivo = null;
 }
 
@@ -179,25 +191,31 @@ function golpearTopo(evento) {
 // ============================================================
 function iniciarPartida() {
   // TU CÓDIGO AQUÍ 👇
+  //reinicio marcadores
   puntaje = 0;
   tiempoRestante = 30;
   juegoActivo = true;
 
-  displayHighScore.textContent = highScore;
-  displayPuntaje.textContent = 0;
-  displayTiempo.textContent = 30;
+  //reseteo de displays
+  displayPuntaje.textContent = puntaje;
+  displayTiempo.textContent = tiempoRestante;
+  displayHighScore.textContent = cargarHighScore();
+
   mensajeFinal.classList.add("oculto");
   btnIniciar.disabled = true;
 
+  //intervalos para mostrar topos
   mostrarTopo();
-  intervaloTopo = setInterval(mostrarTopo, 900);
+  intervaloTopo = setInterval(() => {
+    mostrarTopo();
+  }, 900);
+
+  //intervalos para que termine la partida con el tiempo
   intervaloTimer = setInterval(() => {
-    tiempoRestante--;
+    tiempoRestante = tiempoRestante - 1;
     displayTiempo.textContent = tiempoRestante;
-    if(tiempoRestante <= 0){
-      terminarPartida();
-    }
-  }, 1000)
+    if (tiempoRestante === 0) {terminarPartida()}
+  }, 1000);
 }
 
 // ============================================================
@@ -218,21 +236,27 @@ function iniciarPartida() {
 // ============================================================
 function terminarPartida() {
   // TU CÓDIGO AQUÍ 👇
+  // reseteo de juego
   juegoActivo = false;
+
   clearInterval(intervaloTopo);
   clearInterval(intervaloTimer);
 
-  if (hoyoActivo !== null){
+  // reseteo de topos
+  if(hoyoActivo !== null){
     hoyoActivo.classList.remove("visible");
     hoyoActivo = null;
   }
-  
-  let record = actualizarHighScore();
-  if(record){
+
+  // actualizar high score
+  const existeRecord = actualizarHighScore();
+  if (existeRecord) {
+    const numHighScore = Number(localStorage.getItem("whack-highscore"));
+    textoFinal.textContent = `Enhorabuena! Has superado el record anterior con ${numHighScore} puntos`
     mensajeFinal.classList.remove("oculto");
-    textoFinal.textContent = `Has superado el record! Tu record fue de: ${highScore}`
   }
-  
+
+  // reseteo de boton
   btnIniciar.disabled = false;
   btnIniciar.textContent = "🔄 Jugar de nuevo";
 }
@@ -249,11 +273,11 @@ function terminarPartida() {
 //
 // Tip: hoyos.forEach((hoyo) => { ... })
 // ============================================================
-
 // TU CÓDIGO AQUÍ 👇
 btnIniciar.addEventListener("click", iniciarPartida);
-hoyos.forEach(hoyo => {
-  hoyo.addEventListener("click",golpearTopo);
+
+hoyos.forEach(cadaHoyo => {
+  cadaHoyo.addEventListener("click",golpearTopo)
 });
 
 // ============================================================
