@@ -114,7 +114,7 @@ function mostrarTopo() {
   hoyoActivo = hoyoAleatorio();
   hoyoActivo.classList.add("visible");
 
-  const hoyoActual = hoyoActivo; // 🔥 CLAVE
+  const hoyoActual = hoyoActivo;
 
   setTimeout(() => {
     if (hoyoActivo === hoyoActual) {
@@ -142,19 +142,24 @@ function mostrarTopo() {
 function golpearTopo(evento) {
   // TU CÓDIGO AQUÍ 👇
   if(!juegoActivo){
-    return false;
+    return ;
   }
+
   const hoyo = evento.currentTarget;
   if (!hoyo.classList.contains("visible")){
-    return false
+    return
   }
+
   puntaje++;
   displayPuntaje.textContent = puntaje;
+
   hoyoActivo.classList.remove("visible")
   hoyoActivo.classList.add("golpeado")
+
   setTimeout(() => {
     hoyoActivo.classList.remove("golpeado")
   }, 300)
+  
   hoyoActivo = null;
 }
 
