@@ -12,6 +12,7 @@
 -------------------------------------------------------------------------- */
 function limpiarInput(str) {
   // TU CÓDIGO AQUÍ 👇
+  return str.trim().toLowerCase()
 }
 
 /* --------------------------------------------------------------------------
@@ -21,6 +22,12 @@ function limpiarInput(str) {
 -------------------------------------------------------------------------- */
 function esEmailValido(email) {
   // TU CÓDIGO AQUÍ 👇
+  if (email.includes("@") && email.includes(".")){
+    return true
+  }
+  else {
+    return false
+  }
 }
 
 /* --------------------------------------------------------------------------
@@ -30,6 +37,7 @@ function esEmailValido(email) {
 -------------------------------------------------------------------------- */
 function esPasswordLarga(pass) {
   // TU CÓDIGO AQUÍ 👇
+  return pass.length >= 8;
 }
 
 /* --------------------------------------------------------------------------
@@ -40,6 +48,9 @@ function esPasswordLarga(pass) {
 -------------------------------------------------------------------------- */
 function slugify(titulo) {
   // TU CÓDIGO AQUÍ 👇
+  return titulo.toLowerCase().split(" ").join("-");
+  //existe el metodo .replace(valorBuscado, valorReemplazo) (o replaceAll en este caso)
+  // return titulo.toLowerCase().replaceAll(" ", "-");
 }
 
 /* --------------------------------------------------------------------------
@@ -49,6 +60,13 @@ function slugify(titulo) {
 -------------------------------------------------------------------------- */
 function extraerId(str) {
   // TU CÓDIGO AQUÍ 👇
+  let arrayString = str.split("-");
+  for (let i of arrayString){
+    let numero = Number(i)
+    if(!isNaN(numero)){
+      return numero;
+    }
+  }
 }
 
 /* --------------------------------------------------------------------------
@@ -59,6 +77,13 @@ function extraerId(str) {
 -------------------------------------------------------------------------- */
 function mascararTarjeta(num) {
   // TU CÓDIGO AQUÍ 👇
+  let array = num.split("");
+  return array.map((caracter,index) => {
+    if (index < (array.length - 4)){
+      caracter = '*'
+    }
+    return caracter;
+  }).join("")
 }
 
 /* --------------------------------------------------------------------------
@@ -68,6 +93,8 @@ function mascararTarjeta(num) {
 -------------------------------------------------------------------------- */
 function soloNumeros(str) {
   // TU CÓDIGO AQUÍ 👇
+  let arrayCaracteres = str.split("");
+  return arrayCaracteres.filter(e => !isNaN(Number(e))).join(""); 
 }
 
 /* --------------------------------------------------------------------------
@@ -77,6 +104,9 @@ function soloNumeros(str) {
 -------------------------------------------------------------------------- */
 function capitalizar(str) {
   // TU CÓDIGO AQUÍ 👇
+  let array = str.toLowerCase().split("");
+  array[0] = array[0].toUpperCase()
+  return array.join("");
 }
 
 /* --------------------------------------------------------------------------
@@ -87,6 +117,10 @@ function capitalizar(str) {
 -------------------------------------------------------------------------- */
 function limitarTexto(str, limit) {
   // TU CÓDIGO AQUÍ 👇
+  if (str.length > limit){
+    return `${str.slice(0,limit)}...`;
+  }
+  return str;
 }
 
 /* --------------------------------------------------------------------------
@@ -96,6 +130,10 @@ function limitarTexto(str, limit) {
 -------------------------------------------------------------------------- */
 function obtenerExtension(file) {
   // TU CÓDIGO AQUÍ 👇
+  let arrayInvertido = file.split("").reverse();
+  let formatoInvertido = arrayInvertido.slice(0,arrayInvertido.indexOf("."));
+  let formato = formatoInvertido.reverse().join("");
+  return formato;
 }
 
 // 🚨 ¡NO TOCAR! Exportación para los tests

@@ -15,19 +15,29 @@
 // ============================================================
 let puntaje = 0;
 let tiempoRestante = 30;
+
 let intervaloTopo = null; // Va a guardar el ID del setInterval de los topos
 let intervaloTimer = null; // Va a guardar el ID del setInterval del reloj
+
 let juegoActivo = false;
+
 let hoyoActivo = null; // El hoyo que tiene el topo visible en este momento
 
 // ============================================================
 // 🔌 CONEXIONES AL DOM — Ya están escritas, no las toques
 // ============================================================
+// MERCADOR
 const displayPuntaje = document.querySelector("#puntaje");
 const displayTiempo = document.querySelector("#tiempo");
 const displayHighScore = document.querySelector("#high-score");
-const btnIniciar = document.querySelector("#btn-iniciar");
+
+// JARDIN
 const hoyos = document.querySelectorAll(".hoyo");
+
+// CONTROLES
+const btnIniciar = document.querySelector("#btn-iniciar");
+
+// MENSAJE
 const mensajeFinal = document.querySelector("#mensaje-final");
 const textoFinal = document.querySelector("#texto-final");
 
@@ -43,6 +53,9 @@ const textoFinal = document.querySelector("#texto-final");
 // ============================================================
 function cargarHighScore() {
   // TU CÓDIGO AQUÍ 👇
+  const highScore = localStorage.getItem("whack-highscore");
+  displayHighScore.textContent = highScore === null ? "0": highScore;
+  return displayHighScore.textContent;
 }
 
 // ============================================================
@@ -59,6 +72,12 @@ function cargarHighScore() {
 // ============================================================
 function actualizarHighScore() {
   // TU CÓDIGO AQUÍ 👇
+  const numHighScore = Number(localStorage.getItem("whack-highscore")) || 0;
+  if(puntaje > numHighScore){
+    localStorage.setItem("whack-highscore", puntaje);
+    return true;
+  }
+  return false;
 }
 
 // ============================================================
@@ -74,6 +93,8 @@ function actualizarHighScore() {
 // ============================================================
 function hoyoAleatorio() {
   // TU CÓDIGO AQUÍ 👇
+  const numero = Math.floor(Math.random() * hoyos.length);
+  return hoyos[numero];
 }
 
 // ============================================================
@@ -95,6 +116,21 @@ function hoyoAleatorio() {
 // ============================================================
 function mostrarTopo() {
   // TU CÓDIGO AQUÍ 👇
+  //si es null sigue de largo, si no es null, le quita visibilidad para darsela a otro topo
+  if(hoyoActivo !== null){
+    hoyoActivo.classList.remove("visible");
+  }
+  hoyoActivo = hoyoAleatorio();
+  hoyoActivo.classList.add("visible");
+
+  const hoyoActual = hoyoActivo;
+
+  setTimeout(() => {
+    if (hoyoActivo === hoyoActual) {
+      hoyoActual.classList.remove("visible");
+      hoyoActivo = null;
+    }
+  }, 800);
 }
 
 // ============================================================
@@ -114,6 +150,24 @@ function mostrarTopo() {
 // ============================================================
 function golpearTopo(evento) {
   // TU CÓDIGO AQUÍ 👇
+  //si el juego no esta activo no corre
+  if(!juegoActivo) return;
+
+  const hoyoClickeado = evento.currentTarget;
+
+  //si el hoyo clickeado no es visible no corre
+  if (!hoyoClickeado.classList.contains("visible")) return;
+
+  puntaje = puntaje + 1;
+  displayPuntaje.textContent = puntaje;
+
+  hoyoClickeado.classList.remove("visible");
+  hoyoClickeado.classList.add("golpeado");
+  setTimeout(() => {
+    hoyoClickeado.classList.remove("golpeado");
+  }, 300);
+
+  hoyoActivo = null;
 }
 
 // ============================================================
@@ -137,6 +191,31 @@ function golpearTopo(evento) {
 // ============================================================
 function iniciarPartida() {
   // TU CÓDIGO AQUÍ 👇
+  //reinicio marcadores
+  puntaje = 0;
+  tiempoRestante = 30;
+  juegoActivo = true;
+
+  //reseteo de displays
+  displayPuntaje.textContent = puntaje;
+  displayTiempo.textContent = tiempoRestante;
+  displayHighScore.textContent = cargarHighScore();
+
+  mensajeFinal.classList.add("oculto");
+  btnIniciar.disabled = true;
+
+  //intervalos para mostrar topos
+  mostrarTopo();
+  intervaloTopo = setInterval(() => {
+    mostrarTopo();
+  }, 900);
+
+  //intervalos para que termine la partida con el tiempo
+  intervaloTimer = setInterval(() => {
+    tiempoRestante = tiempoRestante - 1;
+    displayTiempo.textContent = tiempoRestante;
+    if (tiempoRestante === 0) {terminarPartida()}
+  }, 1000);
 }
 
 // ============================================================
@@ -157,6 +236,29 @@ function iniciarPartida() {
 // ============================================================
 function terminarPartida() {
   // TU CÓDIGO AQUÍ 👇
+  // reseteo de juego
+  juegoActivo = false;
+
+  clearInterval(intervaloTopo);
+  clearInterval(intervaloTimer);
+
+  // reseteo de topos
+  if(hoyoActivo !== null){
+    hoyoActivo.classList.remove("visible");
+    hoyoActivo = null;
+  }
+
+  // actualizar high score
+  const existeRecord = actualizarHighScore();
+  if (existeRecord) {
+    const numHighScore = Number(localStorage.getItem("whack-highscore"));
+    textoFinal.textContent = `Enhorabuena! Has superado el record anterior con ${numHighScore} puntos`
+    mensajeFinal.classList.remove("oculto");
+  }
+
+  // reseteo de boton
+  btnIniciar.disabled = false;
+  btnIniciar.textContent = "🔄 Jugar de nuevo";
 }
 
 // ============================================================
@@ -171,8 +273,12 @@ function terminarPartida() {
 //
 // Tip: hoyos.forEach((hoyo) => { ... })
 // ============================================================
-
 // TU CÓDIGO AQUÍ 👇
+btnIniciar.addEventListener("click", iniciarPartida);
+
+hoyos.forEach(cadaHoyo => {
+  cadaHoyo.addEventListener("click",golpearTopo)
+});
 
 // ============================================================
 // 🚀 ARRANQUE — Ya está escrito, no lo toques
